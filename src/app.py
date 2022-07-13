@@ -3,44 +3,31 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt 
 import plotly.express as px
+import plotly.figure_factory as ff
 
 from fredapi import Fred
 FRED_KEY = os.getenv('POETRY_FRED_SECRET_KEY')
 fred = Fred(FRED_KEY)
 style = plt.style.use('fivethirtyeight')
 
-# Global variables
-cpi_fed = fred.get_series(series_id='CPILFESL')
-rent_pr = fred.get_series(series_id='CSUSHPINSA')
-oil_price = fred.get_series(series_id='DCOILBRENTEU')
-us_food = fred.get_series(series_id='CPIFABSL')
-global_food = fred.get_series(series_id='PFOODINDEXM')
-avg_salary = fred.get_series(series_id='LES1252881600Q')
-hr_salary = fred.get_series(series_id='FEDMINNFRWG')
-
-pr_ratio = fred.get_series(series_id='USSTHPI')
-cpi_rent = fred.get_series(series_id='CUUR0000SEHA')
-sp500 = fred.get_series(series_id='SP500')
-
-
 def intro():
     st.markdown("""
-        # Rising Inflation Analisys Data
+        # Rising Inflation Analysis Data
 
         Due to rising inflation in my hometown of Puerto Rico I am going to analyze the inflation of the US. 
         I will also take into account the SP500 index and how it corralates with the inflation and rising rent in the US.
 
 
         I will be using the data from the [Federal Reserve Bank of St. Louis](https://fred.stlouisfed.org/). 
-        The different data sources are:
-            1. Consumer Price Index (CPI) for Urban Citizens: Less Food & Energy US City Average
-            2. Rent of Primary Residence in US City Average
-            3. Oil Price
-            4. US Food
-            5. Global Food
-            6. Average Salary
-            7. Hourly Salary
-            8. SP500
+        #### The different data sources are:
+            - Consumer Price Index (CPI) for Urban Citizens: Less Food & Energy US City Average
+            - Rent of Primary Residence in US City Average
+            - Oil Price
+            - US Food
+            - Global Food
+            - Average Salary
+            - Hourly Salary
+            - SP500
 
         
         ### Questions to answer:
@@ -49,7 +36,7 @@ def intro():
         3. Can inflated home prices cause a decline in the SP500?
         4. Are wages for the average american enough to rent in this market?
 
-        ### Hypotheses:
+        ### Hypothesis:
         1. The inflation rate in the US is higher than the inflation rate in the US in the year 2020.
         2. The US is the #1 country int the world for that reason food and energy is more expensive.
         3. As in 2008 I believe inflated house prices can cause a bear market.
@@ -63,7 +50,7 @@ def intro():
 # Write hello using streamlit
 ############################################
 def rent_cpi_plot(cpi_fed, rent_pr) -> None:
-    st.title("RENT vs CPI Analisys Data")
+    st.title("RENT vs CPI Analysis Data")
     st.write("""
     This is the starting graph showing the rent cost vs basic goods cost inflation from the year 1988 in the U.S.
     """)
@@ -77,15 +64,20 @@ def rent_cpi_plot(cpi_fed, rent_pr) -> None:
 
     # Plot the data
     fig, ax = plt.subplots(figsize=(15, 5))
-    ax.plot(cpi_fed, linewidth=2, label='CIP_BASE', markersize=22, color='green')
-    ax.plot(rent_pr, linewidth=2, label='RENT_PR', markersize=22, color='red')
+    ax.plot(cpi_fed, linewidth=2, label='US CPI', markersize=22, color='green')
+    ax.plot(rent_pr, linewidth=2, label='US Rent Primary Residence', markersize=22, color='red')
+    ax.legend(loc='upper left')
+    ax.set_title('RENT vs CPI Analysis Data')
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Index')
+
     st.pyplot(fig)
 
     return None
 
 
 ##########################################################
-### Part 2: Inflation Analisys Data
+### Part 2: Inflation Analysis Data
 ##################
 def inflation_plot(oil_price, us_food, global_food, cpi_fed) -> None:
     st.write("""
@@ -97,11 +89,25 @@ def inflation_plot(oil_price, us_food, global_food, cpi_fed) -> None:
     global_food = global_food['1985-01-01':]
     cpi_fed = cpi_fed['1985-01-01':]
 
+    # hist_data = [oil_prices, us_food, global_food, cpi_fed]
+    # group_labels = ['Oil Price', 'US Food', 'Global Food', 'CPI']
+    #
+    # fig = ff.create_distplot(
+    #     hist_data, group_labels, bin_size=[1, 1, 1, 1], show_rug=True
+    # )
+    # st.plotly_chart(fig)
+
     fig, ax = plt.subplots(figsize=(15, 5))
-    ax.plot(oil_prices, linewidth=2, label='OIL PRICES', markersize=22, color='orange')
+
+    ax.plot(cpi_fed, linewidth=2, label='US CPI', markersize=22, color='green')
     ax.plot(us_food, linewidth=2, label='US FOOD', markersize=22, color='red')
     ax.plot(global_food, linewidth=2, label='GLOBAL FOOD', markersize=22, color='blue')
-    ax.plot(cpi_fed, linewidth=2, label='CIP_BASE', markersize=22, color='green')
+    ax.plot(oil_prices, linewidth=2, label='OIL PRICES', markersize=22, color='orange')
+
+    ax.legend(loc='upper left')
+    ax.set_title('Inflation Analysis Data')
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Index')
 
     st.pyplot(fig)
      
@@ -112,22 +118,39 @@ def inflation_plot(oil_price, us_food, global_food, cpi_fed) -> None:
 # All transactions house price index for USA
 ##########################################################
 def house_price_index_plot(sp500, pr_ratio, cpi_rent) -> None:
-    st.title("House Price Index")
+    st.title("SP500 & House Prices Index")
     st.write("""
-    This is the graph showing the house price index for the USA.
+    Exploring correlation between the SP500 vs house prices divided by cpi index as (house_price/cpi).
     """)
 
-    sp500 = sp500['1985-01-01':]
-    pr_ratio = pr_ratio['1985-01-01':]
-    cpi_rent = cpi_rent['1985-01-01':]
-    sp500 = pd.DataFrame(sp500)[0] /5000
+    sp500 = sp500['2017-01-01':] # Get the data  for SP500
+    pr_ratio = pr_ratio['2017-01-01':] # Rent of Primary Residence in US City Average
+    cpi_rent = cpi_rent['2017-01-01':] # Average Consumer Price Index (CPI) for Urban Citizens: Less Food & Energy US City Average
+    
 
-    # print(pr_ratio.head())
-    rent_price_ratio = pd.DataFrame(pr_ratio)[0] / pd.DataFrame(cpi_rent)[0]
+    sp500 = pd.DataFrame(sp500)[0] / 2500 # Divide by 5000 to get the index
+
+    rent_ratio = pd.DataFrame(pr_ratio)
+    cpi_rents = pd.DataFrame(cpi_rent)
+    rent_ratio = rent_ratio.rename(columns={0: 'Rent'})
+    cpi_rents = cpi_rents.rename(columns={0: 'CPI'})
+
+    # filter cpi by quarter
+    month = cpi_rents.index.month
+    cpi = cpi_rents.iloc[( (month == 1) | (month == 4) | (month == 7) | (month == 10) )]
+
+    # divide standard house price index by cpi
+    rent_price_ratio = rent_ratio['Rent'] / cpi['CPI']
+
 
     fig, ax = plt.subplots(figsize=(15, 5))
     ax.plot(rent_price_ratio, linewidth=2, label='RENT RATIO', markersize=22, color='red')
     ax.plot(sp500, linewidth=2, label='S&P500', markersize=22, color='green')
+    ax.legend(loc='upper left')
+    ax.set_title('House Price Index')
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Index')
+
     st.pyplot(fig)
 
     return None
@@ -137,25 +160,29 @@ def house_price_index_plot(sp500, pr_ratio, cpi_rent) -> None:
 ### Bonus: Averege salary vs inflation
 ##################
 def avg_salary_rent_plot(avg_salary, hr_salary, rent_pr) -> None:
-    st.title("Bonus: Avg. Monthly Salary vs Rent in the US")
+    st.title("Avg. Monthly Salary vs Rent in the US")
     st.write("""
     The blue graph represents median monthly earnings of a average US worker, the red line is the average rent in the US.
-    😢😢
+    😢😢 For context 1/3 or US workers fall into this category.
     """)
 
     # Hourly wages not adjusted for inflation
     hr_salary = hr_salary['1985-01-01':]
 
     # get average salary per month
-    avg_joe_month = pd.DataFrame(hr_salary)[0] * 40 * 4 * 2.5 # Get monthly salary at minimum wage and mult by 2
+    avg_joe_month = pd.DataFrame(hr_salary)[0] * 40 * 4 * 2 # Get monthly salary at minimum wage and mult by 2
 
-    # this is the cost of rent using a modest %1 percent of the house value
-    rent_pr = pd.DataFrame(rent_pr)[0] * 10
+    # this is the cost of rent using a modest %0.8 percent of the house value
+    rent_pr = pd.DataFrame(rent_pr)[0] * 8
 
     ## Plot the data
     fig, ax = plt.subplots(figsize=(15, 5))
-    ax.plot(rent_pr, linewidth=2, label='RENT_PR', markersize=22, color='red')
+    ax.plot(rent_pr, linewidth=2, label='Rent Primary Residence', markersize=22, color='red')
     ax.plot(avg_joe_month, linewidth=2, label='AVG_SALARY', markersize=22, color='blue')
+    ax.legend(loc='upper left')
+    ax.set_title('Avg. Monthly Salary vs Rent in the US')
+    ax.set_xlabel('Year')
+    ax.set_ylabel('$USD')
 
     st.pyplot(fig)
 
@@ -168,11 +195,73 @@ def avg_salary_rent_plot(avg_salary, hr_salary, rent_pr) -> None:
 
     return None
 
+#### metrics
+def metrics_plot(sp500, oil_prices, rent_pr) -> None:
+   # Clean data get last input and substract from previous to get % change 
+    sp500 = sp500.iloc[-2:]
+    sp500_chang = sp500.iloc[-1] - sp500.iloc[-2]
+
+    oil_prices = oil_prices.iloc[-2:]
+    oil_prices_chang = oil_prices.iloc[-1] - oil_prices.iloc[-2]
+
+    rent_pr = rent_pr.iloc[-2:]
+    rent_pr_chang = rent_pr.iloc[-1] - rent_pr.iloc[-2]
+
+    st.markdown("### Yesterday's Market Close: ")
+    with open('./src/style.css') as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+    a, b, c = st.columns(3)
+    a.metric("SP500", sp500.iloc[-1], round(sp500_chang,2))
+    b.metric("Oil Bert", oil_prices.iloc[-1], round(oil_prices_chang,2))
+    c.metric("Avg. House Price in US", ("$%d" % (rent_pr.iloc[-1]*1000)), 1000*round(rent_pr_chang,2))
+
+####################################
+# Conslusion:
+##########################
+def conclusion():
+    st.markdown("""
+        # Conclusion
+
+        Due to rising inflation in my hometown of Puerto Rico I am going to analyze the inflation of the US. 
+        I will also take into account the SP500 index and how it corralates with the inflation and rising rent in the US.
+        
+
+        **Inflation**: The inflation is the difference between the price of a good or service and the price of the same good or service in the future.
+
+        ### References:
+
+        1. [Oxfam America Study](https://www.oxfamamerica.org/explore/research-publications/the-crisis-of-low-wages-in-the-us/)
+    """)
+    return None
+
 
 
 ##########################################################
 intro()
+
+# Part 1
+cpi_fed = fred.get_series(series_id='CPILFESL')
+rent_pr = fred.get_series(series_id='CSUSHPINSA')
 rent_cpi_plot(cpi_fed, rent_pr)
+
+## Part 2
+oil_price = fred.get_series(series_id='DCOILBRENTEU')
+us_food = fred.get_series(series_id='CPIFABSL')
+global_food = fred.get_series(series_id='PFOODINDEXM')
 inflation_plot(oil_price, us_food, global_food, cpi_fed)
+
+# Part 3
+sp500 = fred.get_series(series_id='SP500')
+pr_ratio = fred.get_series(series_id='USSTHPI')
+cpi_rent = fred.get_series(series_id='CUUR0000SEHA')
 house_price_index_plot(sp500, pr_ratio, cpi_rent)
+
+# Part 4
+avg_salary = fred.get_series(series_id='LES1252881600Q')
+hr_salary = fred.get_series(series_id='FEDMINNFRWG')
 avg_salary_rent_plot(avg_salary, hr_salary, rent_pr)
+
+# Conclusion
+metrics_plot(sp500, oil_price, rent_pr)
+conclusion()
