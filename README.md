@@ -1,10 +1,9 @@
 # Data Analysis
 
 
-
-
 # Run Streamlit app
 
+### Poetry
 Start streamlit app open in browser
 on localhost:8501
 
@@ -14,7 +13,13 @@ poetry install
 poetry run streamlit src/app.py
 ```
 
-# Rising Inflation Analisys Data
+### Docker
+```
+docker build -t yourtag .
+docker run -d yourtag 
+```
+
+# Rising Inflation Analysis Data
 
 Due to rising inflation in my hometown of Puerto Rico I am going to analyze the inflation of the US. 
 I will also take into account the SP500 index and how it corralates with the inflation and rising rent in the US.

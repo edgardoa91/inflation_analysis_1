@@ -235,31 +235,36 @@ def conclusion():
     """)
     return None
 
+@st.experimental_memo
+def load_data(series_id):
+    data = fred.get_series(series_id)
+    return data
+
 
 
 ##########################################################
 intro()
 
 # Part 1
-cpi_fed = fred.get_series(series_id='CPILFESL')
-rent_pr = fred.get_series(series_id='CSUSHPINSA')
+cpi_fed = load_data('CPILFESL')
+rent_pr = load_data('CSUSHPINSA')
 rent_cpi_plot(cpi_fed, rent_pr)
 
 ## Part 2
-oil_price = fred.get_series(series_id='DCOILBRENTEU')
-us_food = fred.get_series(series_id='CPIFABSL')
-global_food = fred.get_series(series_id='PFOODINDEXM')
+oil_price = load_data('DCOILBRENTEU')
+us_food = load_data('CPIFABSL')
+global_food = load_data('PFOODINDEXM')
 inflation_plot(oil_price, us_food, global_food, cpi_fed)
 
 # Part 3
-sp500 = fred.get_series(series_id='SP500')
-pr_ratio = fred.get_series(series_id='USSTHPI')
-cpi_rent = fred.get_series(series_id='CUUR0000SEHA')
+sp500 = load_data('SP500')
+pr_ratio = load_data('USSTHPI')
+cpi_rent = load_data('CUUR0000SEHA')
 house_price_index_plot(sp500, pr_ratio, cpi_rent)
 
 # Part 4
-avg_salary = fred.get_series(series_id='LES1252881600Q')
-hr_salary = fred.get_series(series_id='FEDMINNFRWG')
+avg_salary = load_data('LES1252881600Q')
+hr_salary = load_data('FEDMINNFRWG')
 avg_salary_rent_plot(avg_salary, hr_salary, rent_pr)
 
 # Conclusion
