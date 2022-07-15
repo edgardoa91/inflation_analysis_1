@@ -1,5 +1,7 @@
 # Data Analysis
 
+This project is hosted on Google Cloud Run give it a few minutes after clicking the link. Thank You.
+-> [Live Demo](https://inflation-analysis-1-xy7pd5y6iq-uc.a.run.app)
 
 # Run Streamlit app
 

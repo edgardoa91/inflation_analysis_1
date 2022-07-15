@@ -38,9 +38,9 @@ def intro():
 
         ### Hypothesis:
         1. The inflation rate in the US is higher than the inflation rate in the US in the year 2020.
-        2. The US is the #1 country int the world for that reason food and energy is more expensive.
+        2. The US is the #1 country in the world for that reason food and energy is more expensive comparatively.
         3. As in 2008 I believe inflated house prices can cause a bear market.
-        4. Just by lookign in my neighborhood you need roomates if ou have an average salary in the US.
+        4. Just by looking in my neighborhood you need roomates if you have an average salary in the US.
     """)
     return None
 
@@ -52,7 +52,9 @@ def intro():
 def rent_cpi_plot(cpi_fed, rent_pr) -> None:
     st.title("RENT vs CPI Analysis Data")
     st.write("""
-    This is the starting graph showing the rent cost vs basic goods cost inflation from the year 1988 in the U.S.
+    In this graph we can vizualize the inflation growth and how house rent prices collapse once they get near the CPI index. 
+    We can also observe that in 2021 the line crosses the CPI meaning rent is more expensive than CPI. This means that if you have
+    an average salary almost all will go to paying rent.
     """)
 
     # Average Consumer Price Index (CPI) for Urban Citizens: Less Food & Energy US City Average 
@@ -81,7 +83,8 @@ def rent_cpi_plot(cpi_fed, rent_pr) -> None:
 ##################
 def inflation_plot(oil_price, us_food, global_food, cpi_fed) -> None:
     st.write("""
-    Now are going to analize food prices vs energy cost.
+    Now comparing the US to the rest of the world, there is a big gap between prices of food in the US vs the rest of the world.
+    Also it is interesting to note that oil prices correlate with global food prices.
     """)
 
     oil_prices = oil_price['1985-01-01':]
@@ -120,7 +123,8 @@ def inflation_plot(oil_price, us_food, global_food, cpi_fed) -> None:
 def house_price_index_plot(sp500, pr_ratio, cpi_rent) -> None:
     st.title("SP500 & House Prices Index")
     st.write("""
-    Exploring correlation between the SP500 vs house prices divided by cpi index as (house_price/cpi).
+    Now we explore the correlation between the SP500 vs rent price ratio. We get the rent price ratio by dividing house prices by cpi index as (house_price/cpi).
+
     """)
 
     sp500 = sp500['2017-01-01':] # Get the data  for SP500
@@ -153,6 +157,12 @@ def house_price_index_plot(sp500, pr_ratio, cpi_rent) -> None:
 
     st.pyplot(fig)
 
+    st.write("""
+    We can observe a sharp increase in rent ratio as the SP500 increases in 2021 but further analysis needs to be done to get a better understanding.
+    """)
+
+
+
     return None
 
 
@@ -163,7 +173,7 @@ def avg_salary_rent_plot(avg_salary, hr_salary, rent_pr) -> None:
     st.title("Avg. Monthly Salary vs Rent in the US")
     st.write("""
     The blue graph represents median monthly earnings of a average US worker, the red line is the average rent in the US.
-    😢😢 For context 1/3 or US workers fall into this category.
+    For context 1/3 or US workers fall into this category.[1]
     """)
 
     # Hourly wages not adjusted for inflation
@@ -187,7 +197,7 @@ def avg_salary_rent_plot(avg_salary, hr_salary, rent_pr) -> None:
     st.pyplot(fig)
 
     st.write("""
-    We are going to get how much money is left after paying rent for avg. joe
+    Now we are going to get how much money is left after paying rent for avg. joe
     """)
 
     money_left = avg_joe_month - rent_pr
@@ -222,10 +232,11 @@ def metrics_plot(sp500, oil_prices, rent_pr) -> None:
 def conclusion():
     st.markdown("""
         # Conclusion
-
-        Due to rising inflation in my hometown of Puerto Rico I am going to analyze the inflation of the US. 
-        I will also take into account the SP500 index and how it corralates with the inflation and rising rent in the US.
         
+        We can observe that rising inflation is very damaging to the economy and that if a worker earns $15 or less an hour
+        in this economy they will barely be able to afford rent. As in 2008 I expect the housing market to collapse, rent is too high compared to wages.
+        
+        This is a brief overview of the inflation in the US and the effect it is causing to rent and living expenses.
 
         **Inflation**: The inflation is the difference between the price of a good or service and the price of the same good or service in the future.
 
